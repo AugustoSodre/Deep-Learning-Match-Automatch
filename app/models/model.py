@@ -40,8 +40,8 @@ class CarTower(nn.Module):
 class TwoTowerMatch(nn.Module):
     def __init__(self, num_categories, embedding_dim=16):
         super(TwoTowerMatch, self).__init__()
-        # User: 5 features numéricas (budget + 4 prioridades)
-        self.user_tower = UserTower(num_categories, embedding_dim, numeric_dim=5)
+        # User: 3 features numéricas (budget + 2 prioridades)
+        self.user_tower = UserTower(num_categories, embedding_dim, numeric_dim=3)
         # Car: 3 features numéricas (price + hp + consumption)
         self.car_tower = CarTower(num_categories, embedding_dim, numeric_dim=3)
         

@@ -18,9 +18,7 @@ def preprocess_user(user_data, category_to_idx):
     # Exemplo simplificado de mapeamento de prioridades (1-5) para tensor
     priorities = [
         user_data['priorities']['economy'],
-        user_data['priorities']['power'],
-        user_data['priorities']['comfort'],
-        user_data['priorities']['safety']
+        user_data['priorities']['power']
     ]
     
     # Orçamento normalizado (exemplo: dividindo por 100k)
