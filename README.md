@@ -6,9 +6,9 @@ Este microsserviço é o "cérebro" do projeto **AutoMatch**. Ele utiliza técni
 
 Implementamos uma **Arquitetura de Duas Torres (Two-Tower Architecture)** utilizando **PyTorch**. Esta arquitetura é ideal para sistemas de recomendação onde precisamos mapear entidades diferentes (Usuários e Itens) para um mesmo espaço vetorial (latent space).
 
-- **User Tower (Torre do Usuário):** Codifica as preferências coletadas no Quiz (Orçamento, Prioridades de IA, Uso principal) em um vetor numérico (embedding).
-- **Car Tower (Torre do Carro):** Codifica os atributos técnicos do veículo (Potência, Consumo, Categoria, Preço) em um vetor de mesma dimensão.
-- **Normalização & Score:** Utilizamos a **Similaridade de Cosseno** normalizada para o intervalo `[0, 1]` para determinar o "Match Percentage".
+- **User Tower (Torre do Usuário):** Codifica orçamento, prioridades (economia e potência) e categorias preferidas em um vetor latente.
+- **Car Tower (Torre do Carro):** Codifica preço, potência, consumo e categoria do veículo em um vetor de mesma dimensão.
+- **Scoring Híbrido:** O modelo calcula a similaridade de cosseno (`model_score`), que é depois combinado com um `preference_boost` baseado em uso principal, ambiente, grupo/família e faixa de ano do modelo. O resultado final é: `match_score = 0.38 * model_score + 0.62 * preference_boost`.
 
 ## 🛠️ Stack Tecnológica
 
@@ -52,10 +52,19 @@ O serviço estará disponível em `http://localhost:8000`. Acesse `/docs` para a
 
 ## 🔌 API Endpoint: `POST /match`
 
-O serviço espera um objeto contendo o perfil do usuário e uma lista de carros.
+O serviço espera o perfil do usuário e uma lista de carros.
+
+**Entradas esperadas:**
+- `user_profile`: demographics, financials, technicalPreferences, priorities
+- `available_cars[]`: id, nome, ano, preco, categoria, specs.potencia, specs.consumo
 
 **Lógica de Match:**
-O motor processa strings como `"12 km/l"` ou `"150 cv"`, normaliza os valores e aplica os pesos de prioridade do usuário (Economia, Potência, etc.) para gerar o ranking final.
+1. Extrai números de specs (ex: "150 cv" → 150).
+2. Normaliza valores e gera embeddings do usuário e carro.
+3. Calcula similaridade de cosseno (two-tower).
+4. Aplica preference_boost com pesos: uso (34%), categoria (28%), ambiente (22%), família (10%), ano (6%).
+5. Combina scores com ponderação: 38% modelo + 62% preferência.
+6. Retorna ranking ordenado por `match_score`.
 
 ---
 Desenvolvido para o ecossistema **AutoMatch AI**.
