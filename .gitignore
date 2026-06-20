@@ -139,7 +139,6 @@ dmypy.json
 *.joblib
 *.model
 *.onnx
-models/
 checkpoints/
 weights/
 datasets/
